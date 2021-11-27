@@ -3,7 +3,7 @@
 # RD = Registradores de destino → [3-7] 5BITS;
 # RS = Registro de fonte 1 → [8-11] 4BITS;
 # RT/CONST = Registro de fonte 2/constante → [12-15] 4BITS;
-#000 0 0000 0000 0000
+#000 00000 0000 0000
 #RR ->
 #   ADRR -> ROP = 0
 #           [ROP] [RS] [RT] [RD]
