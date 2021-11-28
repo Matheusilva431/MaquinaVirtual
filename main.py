@@ -28,6 +28,8 @@ registrador = ("@R0", "@R1", "@R2", "@R3", "@R4", "@R5", "@R6", "@R7", "@R8", "@
 msg_erro = ("ERRO --> OPCODE Não é conhecido", "ERRO --> Registrador não existe")
 
 registradores = []
+#[valid, tag, data[]]
+memoriaCache = []
 rop = rs = rt = rd = const = -1
 
 def fetch(instrucoes, pc):
@@ -110,12 +112,30 @@ def initRegistradores():
     for i in range(10):
         registradores.append(i)
 
-#main
+def initCache():
+    global memoriaCache
+    auxCache = []
+    data = []
+    for i in range(2):
+        auxCache.clear()
+        data.clear()
+        auxCache.append(False)  # valid
+        auxCache.append(-1)  # tag
+        for j in range(2):
+            data.append(0)#data[j]
+        print(data)
+        auxCache.append(data)#data[j]
+        print(auxCache)
+        memoriaCache.append(auxCache)
+    print(memoriaCache)
+
+ #main
 instrucoes = [0b0000000001101001, 0b0010000101110001, 0b0100001010000001,
               0b0110001110011010, 0b1000010001110001, 0b1010010110010101]
 pc = 0
 
 initRegistradores()
+initCache()
 numInstrucao = 6
 while pc < 6:
     ir = fetch(instrucoes, pc)
