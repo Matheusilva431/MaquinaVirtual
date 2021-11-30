@@ -28,8 +28,12 @@ registrador = ("@R0", "@R1", "@R2", "@R3", "@R4", "@R5", "@R6", "@R7", "@R8", "@
 msg_erro = ("ERRO --> OPCODE Não é conhecido", "ERRO --> Registrador não existe")
 
 registradores = []
+Col = lin = 2 #numero de coluna e linhas na cache
+
 #[valid, tag, data[]]
-memoriaCache = []
+memoriaCache = [['valid', 'tag', ['data','data']],
+                ['valid', 'tag', ['data','data']]]
+
 rop = rs = rt = rd = const = -1
 
 def fetch(instrucoes, pc):
@@ -113,21 +117,40 @@ def initRegistradores():
         registradores.append(i)
 
 def initCache():
-    global memoriaCache
-    auxCache = []
-    data = []
-    for i in range(2):
-        auxCache.clear()
-        data.clear()
-        auxCache.append(False)  # valid
-        auxCache.append(-1)  # tag
-        for j in range(2):
-            data.append(0)#data[j]
-        print(data)
-        auxCache.append(data)#data[j]
-        print(auxCache)
-        memoriaCache.append(auxCache)
-    print(memoriaCache)
+    global Col, lin
+    for i in range(lin):
+        memoriaCache[i][0] = False  # valid
+        memoriaCache[i][1] = -1  # tag
+        for j in range(Col):
+            memoriaCache[i][2][j] = 0#data[j]
+    #[valid, tag, data[]]
+
+def fetch_cache(instrucoes, pc):
+    global Col, lin
+
+    c = pc & 0x0001
+    l = (pc & 0x0002) >> 1
+    tag =  (pc & 0xFFFC) >> 2
+
+    if memoriaCache[l][0] == False or memoriaCache[l][1] != tag:
+        print('Cache Miss')
+        pos = pc
+        for i in range(lin):
+            memoriaCache[i][0] = True  # valid
+            memoriaCache[i][1] = tag  # tag
+            for j in range(Col):
+                if pos < len(instrucoes):
+                    memoriaCache[i][2][j] = instrucoes[pos] # data[j]
+                else:
+                    memoriaCache[i][2][j] = 0# data[j]
+                pos = pos + 1
+    else:
+        print('Cache hit')
+
+    return memoriaCache[l][2][c]
+
+
+
 
  #main
 instrucoes = [0b0000000001101001, 0b0010000101110001, 0b0100001010000001,
@@ -137,8 +160,8 @@ pc = 0
 initRegistradores()
 initCache()
 numInstrucao = 6
-while pc < 6:
-    ir = fetch(instrucoes, pc)
+while pc < numInstrucao:
+    ir = fetch_cache(instrucoes, pc)
     res = decode(ir)
     if res < 2:
         print(msg_erro[res])
